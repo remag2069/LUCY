@@ -5,7 +5,7 @@ import threading
 import win32clipboard as w
 
 def keyboard_read():
-    time.sleep(3)
+    time.sleep(1)
     k=pynput.keyboard.Controller()
     k.press(Key.ctrl)
     k.press('c')
