@@ -10,7 +10,7 @@ import time
 kas=0
 reset_time=5
 current_time=time.localtime(time.time())[4]
-reset_time=(reset_time+current_time)%60
+reset_time=(reset_time+current_time)
 r=sr.Recognizer()
 '''
 def google_code(terms):
@@ -61,14 +61,22 @@ def bye():
 #go
 def go(text):
     if 'control panel' in text:
+        print('Acessing control panel')
         os.system('Control.exe')
-    if 'moodle' in text:
+    elif 'moodle' in text:
+        print('Acessing Moodle')
         wb.open('https://moodle.iitb.ac.in/login/index.php')
+    elif 'YouTube' in text:
+        print('playing youtube')
+        wb.open('https://www.youtube.com/')
+    else:
+        print('\'open\' function works with \n1.control panel\n2.moodle')
     m=open('D:\\python projects\\speechtotext\\pa name\\music.txt')
     music_var=re.split('/',m.read())
     m.close()
 
     if recon(music_var,text):
+        print('playing music')
         os.system('.\\apps\\groove\\groove.bat')
 
 
@@ -100,9 +108,9 @@ def search_this():
 
 
 #Execute
-def execute():
+def execute(text):
     global kas
-    v.hi()
+    v.hiO(text)
     kas=kas+1
     print(kas)
     print('yes sir, i am listening')
@@ -211,7 +219,7 @@ with sr.Microphone() as source:
         n=open('D:\\python projects\\speechtotext\\pa name\\name.txt','r')
         name=re.split('/',n.read())
         if recon(name,text):
-            execute()
+            execute(text)
         '''else:
             f=open('D:\\python projects\\speechtotext\\pa name\\yes.txt','a')
             f.write(text)
