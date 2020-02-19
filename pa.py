@@ -4,14 +4,16 @@ import re
 import datetime as dt
 from suppliments import voice_pa as v
 from suppliments import keyboard_input
+from suppliments import timer as timer
 import os
 import time
 
 kas=0
 reset_time=5
-current_time=time.localtime(time.time())[4]
-reset_time=(reset_time+current_time)
+current_time=time.time()
+reset_time=(reset_time*60+current_time)
 r=sr.Recognizer()
+run='y'
 '''
 def google_code(terms):
     terms.replace('/n','')
@@ -69,15 +71,33 @@ def go(text):
     elif 'YouTube' in text:
         print('playing youtube')
         wb.open('https://www.youtube.com/')
-    else:
-        print('\'open\' function works with \n1.control panel\n2.moodle')
     m=open('D:\\python projects\\speechtotext\\pa name\\music.txt')
     music_var=re.split('/',m.read())
     m.close()
-
     if recon(music_var,text):
         print('playing music')
         os.system('.\\apps\\groove\\groove.bat')
+    elif 'edit' in text:
+        os.system('.\\apps\\LUCY\\edit.bat') 
+    # elif 'alarm' in text:
+    #     info=re.split(' ',text)
+    #     if info[-1]=='p.m.':
+    #         set_time=re.split(':',info[-2])
+    #         set_time[0]=int(set_time[0])
+    #         set_time[0]+=12
+    #         set_time=str(set_time[0])+':'+set_time[1]
+    #     else:
+    #         if re.split(':',info[-1])==['']:
+    #             set_time=info[-2]
+    #         else:
+    #             set_time=info[-1]
+    #     timer.alarm(set_time)
+
+    else:
+        print('\'open\' function works with \n1.control pannel \n2.moodle \n3.music \n1.youtube')
+    
+
+    
 
 
 #end
@@ -88,6 +108,8 @@ def end(text):
 
     if recon(music_var,text):
         os.system('.\\apps\\groove\\end_groove.bat')
+    else:
+        pass
 
 
 #help
@@ -166,11 +188,19 @@ def execute(text):
         return
 
 
+#mute
+def mute():
+    global run
+    if run=='y':
+        run='n'
+    else:
+        run='y'
 
+#restart
 def reset():
     # v.hi()
     # v.hi()
-    os.system('.\\apps\\LUCY.bat')
+    os.system('.\\apps\\LUCY\\LUCY.bat')
     exit()
 
 '''     
@@ -188,13 +218,15 @@ except:
 '''
 
 
+
 with sr.Microphone() as source:
     #print('setting up ...')
     r.adjust_for_ambient_noise(source,duration=3)
+    # global run
     while(True):
         print('a')
-        C_time=time.localtime(time.time())[4]
-        print(reset_time-C_time)
+        C_time=time.time()
+        print(int((reset_time-C_time)/60))
         try:
             print('b')
             audio=r.listen(source,timeout=1,phrase_time_limit=3)
@@ -206,38 +238,45 @@ with sr.Microphone() as source:
             if int(C_time)>=reset_time:
                 reset()
             continue
-        #bye
-        b=open('D:\\python projects\\speechtotext\\pa name\\bye.txt','r')
-        bye_var=re.split('/',b.read())  
-        b.close()  
-        if recon(bye_var,text):
-            #print("goodbye sir")
-            bye()
-            break
+        if (run=='y'):
+            #bye
+            b=open('D:\\python projects\\speechtotext\\pa name\\bye.txt','r')
+            bye_var=re.split('/',b.read())  
+            b.close()  
+            if recon(bye_var,text):
+                #print("goodbye sir")
+                bye()
+                break
+            
+            #Activation
         
-        #Activation
-        n=open('D:\\python projects\\speechtotext\\pa name\\name.txt','r')
-        name=re.split('/',n.read())
-        if recon(name,text):
-            execute(text)
-        '''else:
-            f=open('D:\\python projects\\speechtotext\\pa name\\yes.txt','a')
-            f.write(text)
-            f.write('/')
-            f.close()
-        '''
-        n.close()
+            n=open('D:\\python projects\\speechtotext\\pa name\\name.txt','r')
+            name=re.split('/',n.read())
+            if recon(name,text):
+                execute(text)
+            '''else:
+                f=open('D:\\python projects\\speechtotext\\pa name\\yes.txt','a')
+                f.write(text)
+                f.write('/')
+                f.close()
+            '''
+            n.close()
 
         #Restart
         r_var=open('D:\\python projects\\speechtotext\\pa name\\restart.txt','r')
         restart=re.split('/',r_var.read())
         r_var.close()
+        s_var=open('D:\\python projects\\speechtotext\\pa name\\sleep.txt','r')
+        sleep=re.split('/',s_var.read())
+        s_var.close()
         if recon(restart,text) or int(C_time)>=reset_time:
             reset()
-
+        elif 'edit' in text:
+           os.system('.\\apps\\LUCY\\edit.bat')
         #help
-        if 'help' in text:
+        elif 'help' in text:
             help()
-
+        elif recon(sleep,text):
+            mute()
     
 
